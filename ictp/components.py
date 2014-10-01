@@ -40,7 +40,7 @@ class RHExporterIctpView(RHConferenceModifBase):
         localTimezone = info.HelperMaKaCInfo.getMaKaCInfoInstance().getTimezone()
         today = timezone(localTimezone).localize(datetime.now())
         
-        query = Ge('endDate',today) 
+        query = Ge('endDate',today) & Any('category', ['2l131','2l132'])
         numdocs, results = catalog.query(query, sort_index='startDate', reverse=False, limit=250)
         results = [catalog.document_map.address_for_docid(result) for result in results]
         res = ''
