@@ -100,13 +100,16 @@ class RHExporterIctpCsvView(RHConferenceModifBase):
                 # get Secretary email
                 admins = conf.getAccessController().getModifierList()
                 admins_email = []
-                if admins: admins_email = [admin.getEmail() for admin in admins]                
-                res += conf.getStartDate().strftime("%Y-%m-%d")+";"+conf.getEndDate().strftime("%Y-%m-%d")+";"+conf.getTitle()+";"+','.join(admins_email)+";"+conf.getKeywords().replace('\n',';')+"\n"
+                if admins: admins_email = [admin.getEmail() for admin in admins]    
+                # get expparts            
+                expparts = ''.join([k for k in conf.getKeywords().split('\n') if k.find("expparts") != -1]).replace('expparts','')
+                res += conf.getStartDate().strftime("%Y-%m-%d")+";"+conf.getEndDate().strftime("%Y-%m-%d")+";"+conf.getTitle()+";"+','.join(admins_email)+";"+expparts+"\n"
             except:
                 pass
 
         response = Response(res,  mimetype='application/csv')
         response.headers['Content-Type'] = "text/csv"
-        response.headers.add('Content-Disposition', 'inline', filename='export_'+today.strftime("%Y-%m-%d-%H-%m")+'.csv')
+        response.headers.add('Content-Disposition', 'inline', filename='export.csv')
 
-        return response
+        #return response
+        return res
