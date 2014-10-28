@@ -111,5 +111,5 @@ class RHExporterIctpCsvView(RHConferenceModifBase):
         response.headers['Content-Type'] = "text/csv"
         response.headers.add('Content-Disposition', 'inline', filename='export.csv')
 
-        #return response
-        return res
+        return response
+        #return res
