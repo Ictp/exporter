@@ -24,3 +24,4 @@ from indico.web.flask.wrappers import IndicoBlueprint
 
 blueprint = IndicoBlueprint('exporter-ictp', __name__, url_prefix='/exporter')
 blueprint.add_url_rule('/ictp', 'view', handlers.RHExporterIctpView)
+blueprint.add_url_rule('/ictp_csv', '', handlers.RHExporterIctpCsvView)
