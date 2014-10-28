@@ -14,6 +14,7 @@ from pytz import timezone
 import MaKaC.common.info as info
 from MaKaC.conference import ConferenceHolder
 
+from flask import Response
 
 
 class RHExporterIctpView(RHConferenceModifBase):
@@ -46,8 +47,7 @@ class RHExporterIctpView(RHConferenceModifBase):
         results = [catalog.document_map.address_for_docid(result) for result in results]
         res = ''
         for obj in results:
-            #try:
-            if 1:
+            try:
                 confId = str(obj).split("|")[0]
                 conf = ch.getById(confId)
                 # get Secretary email
@@ -56,8 +56,8 @@ class RHExporterIctpView(RHConferenceModifBase):
                 if admins: admins_email = [admin.getEmail() for admin in admins]
                 
                 res += self.getSMR(conf)+"$"+','.join(admins_email)+"$"+conf.getTitle()+"$"+conf.getEndDate().strftime("%Y-%m-%d")+"$\n"
-            #except:
-            #    pass
+            except:
+                pass
         return res
         
                 
@@ -65,6 +65,8 @@ class RHExporterIctpView(RHConferenceModifBase):
 class RHExporterIctpCsvView(RHConferenceModifBase):
 
     _register = ExporterRegister()
+
+    
 
     def _checkProtection(self):
         pass
@@ -98,9 +100,13 @@ class RHExporterIctpCsvView(RHConferenceModifBase):
                 # get Secretary email
                 admins = conf.getAccessController().getModifierList()
                 admins_email = []
-                if admins: admins_email = [admin.getEmail() for admin in admins]
-                
-                res += self.getSMR(conf)+";"+','.join(admins_email)+";"+conf.getTitle()+";"+conf.getStartDate().strftime("%Y-%m-%d")+";"+conf.getEndDate().strftime("%Y-%m-%d")+"\n"
+                if admins: admins_email = [admin.getEmail() for admin in admins]                
+                res += conf.getStartDate().strftime("%Y-%m-%d")+";"+conf.getEndDate().strftime("%Y-%m-%d")+";"+conf.getTitle()+";"+','.join(admins_email)+";"+conf.getKeywords().replace('\n',';')+"\n"
             except:
                 pass
-        return res
+
+        response = Response(res,  mimetype='application/csv')
+        response.headers['Content-Type'] = "text/csv"
+        response.headers.add('Content-Disposition', 'inline', filename='export_'+today.strftime("%Y-%m-%d-%H-%m")+'.csv')
+
+        return response
